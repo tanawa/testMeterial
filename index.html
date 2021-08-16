@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-database.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+	  <link rel="stylesheet" type="text/css" href="main.css">
+</head>
+<body>
+    <div class="container">
+        <div>
+          <div class="card login-card">
+            <div class="card-body">
+              <div id="tab_login">
+                <img src="logo.png" width="100%">
+                <div class="form-group">
+                  <label for="text">ชื่อผู้ใช้:</label>
+                  <input type="text" class="form-control" placeholder="กรุณากรอกชื่อผู้ใช้" id="login_username">
+                </div>
+                <div class="form-group">
+                  <label for="pwd">รหัสผ่าน:</label>
+                  <input type="password" class="form-control" placeholder="กรุณากรอกรหัสผ่าน" id="login_password">
+                </div>
+                <div class="form-group form-check">
+                  
+                </div>
+                <button type="submit" class="btn btn-primary active btn-block" onclick="login()">เข้าสู่ระบบ</button>
+                <button type="submit" class="btn btn-primary btn-block" onclick="showTab(2)">สมัครสมาชิก</button>
+              </div>
+              <div id="tab_register">
+                <img src="logo.png" width="100%">
+                <div class="form-group">
+                  <label for="text">ชื่อผู้ใช้:</label>
+                  <input type="text" class="form-control" placeholder="กรุณากรอกชื่อผู้ใช้" id="register_username">
+                </div>
+                <div class="form-group">
+                  <label for="email">รหัสผ่าน:</label>
+                  <input type="email" class="form-control" placeholder="กรุณากรอกรหัสผ่าน" id="register_password">
+                </div>
+                <div class="form-group">
+                  <label for="text">ชื่อ:</label>
+                  <input type="text" class="form-control" placeholder="กรุณากรอกชื่อ" id="register_name">
+                </div>
+                <div class="form-group">
+                  <label for="text">นามสกุล:</label>
+                  <input type="text" class="form-control" placeholder="กรุณากรอกนามสกุล" id="register_lastname">
+                </div>
+                <div class="form-group form-check">
+                  
+                </div>
+                <button type="submit" class="btn btn-primary active btn-block" onclick="register()">ลงทะเบียน</button>
+                <button type="submit" class="btn btn-primary btn-block" onclick="showTab(1)">เข้าสู่ระบบ</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+    <script>
+      var firebaseConfig = {
+    			apiKey: "AIzaSyCxAieSpxdtzyRRuesH7zWcSraaTwHjVlI",
+    			authDomain: "web-developer-3d7db.firebaseapp.com",
+    			databaseURL: "https://web-developer-3d7db-default-rtdb.asia-southeast1.firebasedatabase.app",
+    			projectId: "web-developer-3d7db",
+    			storageBucket: "web-developer-3d7db.appspot.com",
+    			messagingSenderId: "675554122600",
+    			appId: "1:675554122600:web:cb79eb4cbf3d71088e54dd",
+    			measurementId: "G-8YDXS10SQ9"
+  			};
+	  	firebase.initializeApp(firebaseConfig);
+  		firebase.analytics();
+      var pageIndex = ['admin','boss','account','user']
+      showTab(1)
+      function showTab(number){
+        if(number == 1){
+          $('#tab_login').show()
+          $('#tab_register').hide()
+        }else{
+          $('#tab_login').hide()
+          $('#tab_register').show()
+        }
+      }
+
+      if(sessionStorage.getItem("login")!=null && sessionStorage.getItem("login")!='' && sessionStorage.getItem("permission")!= null && sessionStorage.getItem("permission")!=''){
+          let ref=firebase.database().ref('database_manager/user/'+sessionStorage.getItem("token"))
+          ref.once('value',(snapshot)=>{    
+            sessionStorage.setItem("login",snapshot.val()['name']+" "+snapshot.val()['lastname'])
+            sessionStorage.setItem("permission",snapshot.val()['permission'])
+            sessionStorage.setItem("token",snapshot.val()['username'])
+            window.location.href = pageIndex[sessionStorage.getItem("permission")-1]+".html"
+          })
+        
+      }
+
+      function login(){
+        let temp_user = $('#login_username').val()
+        let temp_pwd = $('#login_password').val()
+        if( temp_user != '' &&  temp_pwd != ''){
+          let ref=firebase.database().ref('database_manager/user/'+temp_user)
+          ref.once('value',(snapshot)=>{
+            if(snapshot.val()['password'] == temp_pwd){
+              sessionStorage.setItem("login",snapshot.val()['name']+" "+snapshot.val()['lastname'])
+              sessionStorage.setItem("permission",snapshot.val()['permission'])
+              sessionStorage.setItem("token",temp_user)
+              window.location.href = pageIndex[snapshot.val()['permission']-1]+".html"
+            }
+          })
+        }
+      }
+
+      function register(){
+        let temp_user = $('#register_username').val()
+        let temp_pwd = $('#register_password').val()
+        let temp_name = $('#register_name').val()
+        let temp_lst = $('#register_lastname').val()
+        if( temp_user != '' &&  temp_pwd != '' &&  temp_name != '' &&  temp_lst != ''){
+          let ref=firebase.database().ref('database_manager/user/'+temp_user)
+          ref.child('username').set(temp_user)
+          ref.child('password').set(temp_pwd)
+          ref.child('name').set(temp_name)
+          ref.child('lastname').set(temp_lst)
+          ref.child('permission').set(4)
+          $('#register_username').val('')
+          $('#register_password').val('')
+          $('#register_name').val('')
+          $('#register_lastname').val('')
+          console.log('successful')
+          sessionStorage.setItem("login",temp_name+" "+temp_lst)
+          sessionStorage.setItem("permission",'4')
+          window.location.href = pageIndex[3]+".html"
+        }
+      }
+    </script>
+</body>
+</html>

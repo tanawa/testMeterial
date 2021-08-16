@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<meta charset="utf-8">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-analytics.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-database.js"></script>
+</head>
+<body>
+<div>
+	<center>
+		<table borderColor="#000" cellpadding="10" cellspacing="0">
+			<tr>
+				<td colspan="2" bgcolor="#dbf2f9">
+					<h3 style="color:#166a83">สุพัฒน์การช่าง</h3>
+					<p style="color:#166a83">146 หมู่ 8 ตำบลดอนแก้ว อำเภอแม่ริม	</p>
+					<p style="color:#166a83">จังหวัดเชียงใหม่ 50180	</p>
+					<p style="color:#166a83">โทร. 096-1647686</p>
+				</td>
+				<td colspan="2" bgcolor="#166a83">
+					<h3 style="color:#fff">ใบแจ้งหนี้ (INVOICE)</h3>
+					<p style="color:#fff" id="key">เลขที่ใบแจ้งหนี้:	IV64080001</p>
+					<p style="color:#fff" id="date_start">วันที่ใบแจ้งหนี้:1/8/2021</p>
+					<p style="color:#fff" id="date_end">วันที่ครบกำหนด:	1/9/2021</p>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<p>ลูกค้า:</p>
+				</td>
+				<td>
+					<p id="customer">none</p>
+				</td>
+				<td colspan="2">
+				</td>
+			</tr>
+			<tr bgcolor="#166a83">
+				<td style="color:#fff;">
+					จำนวน
+				</td>
+				<td style="color:#fff;">
+					รายการ
+				</td>
+				<td style="color:#fff;">
+					ราคาต่อหน่วย
+				</td>
+				<td style="color:#fff;">
+					ราคารวม
+				</td>
+			</tr>
+			<tbody id="item_list">
+				<tr>
+					<td>none</td>
+					<td>none</td>
+					<td>none</td>
+					<td>none</td>
+				</tr>
+			</tbody>
+			<tr>
+				<td colspan="2"></td>
+				<td>ค่าขนส่ง</td>
+				<td><p id="transport">none</p></td>
+			</tr>
+			<tr>
+				<td colspan="2"></td>
+				<td>ส่วนลด</td>
+				<td><p id="discount">none</p></td>
+			</tr>
+			<tr>
+				<td colspan="2">ขอขอบคุณที่ร่วมทำธุรกิจกับเรา</td>
+				<td>ราคารวม</td>
+				<td><p id="sum">none</p></td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					<b>หมายเหตุ:</b>
+					<p>หัก ณ ที่จ่าย 3% (เฉพาะค่าแรง)</p>
+				</td>
+				<td></td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					<b>เงื่อนไขการชำระเงิน:</b>
+					<p>ภายใน 30 วัน</p>
+				</td>
+				<td></td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					<b>ข้อมูลการชำระเงิน:</b>
+					<p>ชื่อบัญชี: สุพัฒน์การช่าง</p>
+					<p>เลขที่บัญชี: 123-4-56789-0 ธนาคาร: กสิกรไทย สาขา: ท่าแพ</p>
+				</td>
+				<td></td>
+			</tr>
+		</table>
+	</center>
+	<script type="text/javascript">
+		var myParam = location.search.split('search=')[1]
+		var firebaseConfig = {
+    			apiKey: "AIzaSyCxAieSpxdtzyRRuesH7zWcSraaTwHjVlI",
+    			authDomain: "web-developer-3d7db.firebaseapp.com",
+    			databaseURL: "https://web-developer-3d7db-default-rtdb.asia-southeast1.firebasedatabase.app",
+    			projectId: "web-developer-3d7db",
+    			storageBucket: "web-developer-3d7db.appspot.com",
+    			messagingSenderId: "675554122600",
+    			appId: "1:675554122600:web:cb79eb4cbf3d71088e54dd",
+    			measurementId: "G-8YDXS10SQ9"
+  			};
+	  	firebase.initializeApp(firebaseConfig);
+  		firebase.analytics();
+
+  		var ref = firebase.database().ref('database_manager/receipt/'+myParam)
+  		ref.once('value', (snapshot)=>{
+  			$("#key").text("เลขที่ใบแจ้งหนี้:	"+snapshot.val()['key'])
+  			$("#customer").text(snapshot.val()['customer'])
+  			$("#date_start").text("วันที่ใบแจ้งหนี้: "+snapshot.val()['date_start'])
+  			$("#date_end").text("วันที่ครบกำหนด: "+snapshot.val()['date_end'])
+  			$('#item_list').empty()
+  			let sum = 0
+  			Object.values(snapshot.val()['item']).forEach((item)=>{
+  				let temp = item.split(',')
+  				$('#item_list').append(`
+  					<tr>
+  						<td>${temp[0]}</td><td>${temp[1]}</td><td>${temp[2]}</td><td>${temp[0]*temp[2]}</td>
+  					</tr>
+  					`)
+  				sum += parseInt(temp[0]*temp[2])
+  				console.log(sum)
+  			})
+  			$('#transport').text(parseInt(snapshot.val()['transport']))
+  			sum += parseInt(snapshot.val()['transport'])
+  			$('#discount').text(parseInt(snapshot.val()['discount']))
+  			sum -= parseInt(snapshot.val()['discount'])
+  			$('#sum').text(sum)
+  		})
+		console.log(myParam)
+	</script>
+</div>
+</body>
+</html>

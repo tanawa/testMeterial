@@ -1,0 +1,62 @@
+::-webkit-scrollbar{
+    width: 0px;
+}
+body{
+    padding: 0;
+    margin: 0;
+    font-family: 'Kanit', sans-serif;
+    background-color: #fff;
+}
+.login-card{
+    width: 40%;
+    margin-top: 5%;
+    margin-left: 30%;
+    margin-right: 30%;
+}
+.edit-card{
+    width: 30%;
+    margin-top: 5%;
+    margin-left: 30%;
+    margin-right: 30%;
+}
+table{
+    width: 60%;
+    font-size: 12px;
+}
+.choose_table{
+    border:1px solid transparent;
+}
+.receipt{
+    width: 30%;
+    margin-bottom: 20px;
+}
+.receipt > div > input {
+    width: 100%;
+}
+.receipt > div > button {
+    width: 100%;
+}
+@media only screen and (max-width: 600px) {
+    .login-card{
+        width: 90%;
+        margin-top: 30%;
+        margin-left: 5%;
+        margin-right: 5%;
+    }
+    .edit-card{
+        width: 90%;
+        margin-top: 10%;
+        margin-left: 5%;
+        margin-right: 5%;
+    }
+    table{
+        width: 90%;
+        font-size: 12px;
+    }
+    .scroll-width{
+        overflow: scroll;
+    }
+    .receipt{
+        width: 100%;
+    }
+}

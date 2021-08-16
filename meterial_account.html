@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-database.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="main.css">
+    <script>
+        if(sessionStorage.getItem("login")==null || sessionStorage.getItem("login")==''){
+            window.location.href = "index.html"
+        }
+    </script>
+    <script src="script.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-md bg-primary navbar-dark">
+        <!-- Brand -->
+        <a class="navbar-brand" href="#">material</a>
+      
+        <!-- Toggler/collapsibe Button -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      
+        <!-- Navbar links -->
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <button type="button" class="btn btn-primary btn-block">
+                        <a id="level"></a> <span class="badge badge-light" id="name_session">Link</span>
+                    </button>  
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="account.html">บัญชี</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="meterial_account.html">คลังวัสดุอุปกรณ์</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="peper.html">สัญญา</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="requrst_meterial.html">คำขอ (อุปกรณ์)</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="receipt.html">ใบเสร็จ</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="edit_user.html">แก้ไขข้อมูล</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" onclick="logout()">ออกจากระบบ</a>
+                </li>
+              </ul>
+        </div>
+    </nav>
+    <div class="container-fluid">
+        <br>
+        <h1>คลังวัสดุอุปกรณ์</h1>
+        <p>จัดการข้อมูลคลังวัสดุอุปกรณ์</p>
+        <div class="dropdown">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" id="change_search">
+              ทั้งหมด
+            </button>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" onclick="chn_search(0)">ทั้งหมด</a>
+              <a class="dropdown-item" onclick="chn_search(1)">อนุมัติ</a>
+              <a class="dropdown-item" onclick="chn_search(2)">ถูกยกเลิก</a>
+            </div>
+        </div>
+        <br>
+        <div class="scroll-width">
+            <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>อุปกรณ์</th>
+                    <th>ชื่อ</th>
+                    <th>ประเภท</th>
+                    <th>จำนวน</th>
+                    <th>วันที่</th>
+                    <th>เวลา</th>
+                    <th>สถานะ</th>
+                  </tr>
+                </thead>
+                <tbody id="show_user">
+                  
+                </tbody>
+                <tr>
+                    <td></td>
+                    <td><input type="text" placeholder="รหัสอุปกรณ์" id="add_key"></td>
+                    <td><input type="text" placeholder="ชื่อ" id="add_name"></td>
+                    <td>
+                        <input type="text" placeholder="ประเภท" id="add_type">
+                    </td>
+                    <td><input type="text" placeholder="จำนวน" id="add_count"></td>
+                    <td><button onclick="save()">บันทึก</button></td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <script>
+        var pageIndex = ['ทั้งหมด','ผู้ดูแลระบบ','เจ้าของกิจการ','พนักงานบัญชี','พนักงานทั่วไป']
+        var statusIndex = ['ทั้งหมด','อนุมัติ','ถูกยกเลิก']
+        $('#name_session').text(sessionStorage.getItem("login"))
+        $('#level').text(pageIndex[sessionStorage.getItem("permission")])
+        var firebaseConfig = {
+    			apiKey: "AIzaSyCxAieSpxdtzyRRuesH7zWcSraaTwHjVlI",
+    			authDomain: "web-developer-3d7db.firebaseapp.com",
+    			databaseURL: "https://web-developer-3d7db-default-rtdb.asia-southeast1.firebasedatabase.app",
+    			projectId: "web-developer-3d7db",
+    			storageBucket: "web-developer-3d7db.appspot.com",
+    			messagingSenderId: "675554122600",
+    			appId: "1:675554122600:web:cb79eb4cbf3d71088e54dd",
+    			measurementId: "G-8YDXS10SQ9"
+  			};
+	  	firebase.initializeApp(firebaseConfig);
+  		firebase.analytics();
+          function chn_search(number){
+            $('#change_search').text(statusIndex[number])
+            search(statusIndex[number])
+        }
+        search('ทั้งหมด')
+        function search(number){
+            let ref=firebase.database().ref('database_manager/material')
+            let type = number
+	        ref.once('value',(snapshot)=>{
+                $('#show_user').empty()
+                Object.values(snapshot.val()).forEach((item)=>{
+                    if(type == 'ทั้งหมด' || type == item['status']){
+                        $('#show_user').append(`
+                        <tr>
+                            <td>${item['key']}</td>
+                            <td>${item['name']}</td>
+                            <td>${item['type']}</td>
+                            <td>${item['count']}</td>
+                            <td>${item['date']}</td>
+                            <td>${item['time']}</td>
+                            <td>${item['status']}</td>
+                        </tr>
+                        `)
+                    }
+                })
+            })
+        }
+
+        function save(){
+            let a = $('#add_key').val()
+            let b = $('#add_name').val()
+            let c = $('#add_type').val()
+            let d = $('#add_count').val()
+            if(a !='' && b != '' && c != '' && d !=''){
+                let ref=firebase.database().ref('database_manager/material/'+a)
+                ref.child('key').set(a)
+				ref.child('name').set(b)
+				ref.child('type').set(c)
+				ref.child('date').set(new Date().toLocaleDateString())
+				ref.child('time').set(new Date().toLocaleTimeString())
+				ref.child('count').set(d)
+				ref.child('member').set(sessionStorage.getItem("token"))
+				ref.child('status').set('รอการอนุมัติ')
+				$('#add_key').val('')
+				$('#add_name').val('')
+				$('#add_type').val('')
+				$('#add_count').val('')
+                window.location.reload()
+            }
+        }
+    </script>
+</body>
+</html>

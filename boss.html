@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-database.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="main.css">
+    <script>
+        if(sessionStorage.getItem("login")==null || sessionStorage.getItem("login")==''){
+            window.location.href = "index.html"
+        }
+    </script>
+    <script src="script.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-md bg-primary navbar-dark">
+        <!-- Brand -->
+        <a class="navbar-brand" href="#">material</a>
+      
+        <!-- Toggler/collapsibe Button -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      
+        <!-- Navbar links -->
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <button type="button" class="btn btn-primary btn-block">
+                        <a id="level"></a> <span class="badge badge-light" id="name_session">Link</span>
+                    </button>  
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="boss.html">ข้อมูลผู้ใช้</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="account_boss.html">บัญชี</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="user_boss.html">คลังวัสดุอุปกรณ์</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="boss_customer.html">ข้อมูลลูกค้า</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="peper_admin.html">สัญญา</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="requrst_money.html">คำขอ (เงินเดือนพนักงาน)</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="edit_user.html">แก้ไขข้อมูล</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" onclick="logout()">ออกจากระบบ</a>
+                </li>
+              </ul>
+        </div>
+    </nav>
+    <div class="container-fluid">
+        <br>
+        <h1>ข้อมูลผู้ใช้</h1>
+        <p>ดูข้อมูลผู้ใช้</p>
+        <br>
+        <div class="dropdown">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" id="change_search">
+              ทั้งหมด
+            </button>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" onclick="chn_search(0)">ทั้งหมด</a>
+              <a class="dropdown-item" onclick="chn_search(1)">ผู้ดูแลระบบ</a>
+              <a class="dropdown-item" onclick="chn_search(2)">เจ้าของกิจการ</a>
+              <a class="dropdown-item" onclick="chn_search(3)">พนักงานบัญชี</a>
+              <a class="dropdown-item" onclick="chn_search(4)">พนักงานทั่วไป</a>
+            </div>
+        </div>
+        <br>
+        <div class="scroll-width">
+            <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>ชื่อผู้ใช้</th>
+                    <th>ชื่อ</th>
+                    <th>นามสกุล</th>
+                    <th>ตำแหน่ง</th>
+                  </tr>
+                </thead>
+                <tbody id="show_user">
+                  
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        var pageIndex = ['ผู้ดูแลระบบ','เจ้าของกิจการ','พนักงานบัญชี','พนักงานทั่วไป']
+        $('#name_session').text(sessionStorage.getItem("login"))
+        $('#level').text(pageIndex[sessionStorage.getItem("permission")-1])
+
+        var firebaseConfig = {
+    			apiKey: "AIzaSyCxAieSpxdtzyRRuesH7zWcSraaTwHjVlI",
+    			authDomain: "web-developer-3d7db.firebaseapp.com",
+    			databaseURL: "https://web-developer-3d7db-default-rtdb.asia-southeast1.firebasedatabase.app",
+    			projectId: "web-developer-3d7db",
+    			storageBucket: "web-developer-3d7db.appspot.com",
+    			messagingSenderId: "675554122600",
+    			appId: "1:675554122600:web:cb79eb4cbf3d71088e54dd",
+    			measurementId: "G-8YDXS10SQ9"
+  			};
+	  	firebase.initializeApp(firebaseConfig);
+  		firebase.analytics();
+        function chn_search(number){
+            $('#change_search').text(pageIndex[number])
+            search(number)
+        }
+        search(0)
+        function search(number){
+            let ref=firebase.database().ref('database_manager/user')
+            let type = number
+	        ref.once('value',(snapshot)=>{
+                $('#show_user').empty()
+                Object.values(snapshot.val()).forEach((item)=>{
+                    if(type == 0 || type == item['permission']){
+                        $('#show_user').append(`
+                        <tr>
+                            <td>${item['username']}</td>
+                            <td>${item['name']}</td>
+                            <td>${item['lastname']}</td>
+                            <td>${item['permission']}</td>
+                        </tr>
+                        `)
+                    }
+                })
+            })
+        }
+
+    </script>
+</body>
+</html>
