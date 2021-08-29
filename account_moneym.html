@@ -20,7 +20,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-	<link rel="stylesheet" type="text/css" href="main.css">
+    <link rel="stylesheet" type="text/css" href="main.css">
     <script>
         if(sessionStorage.getItem("login")==null || sessionStorage.getItem("login")==''){
             window.location.href = "index.html"
@@ -41,23 +41,26 @@
         <!-- Navbar links -->
         <div class="collapse navbar-collapse" id="collapsibleNavbar">
             <ul class="navbar-nav">
-                <li class="nav-item" >
-                  <a class="nav-link" href="boss.html" style="font-weight: bold;color: #fff;">ข้อมูลผู้ใช้</a>
+                <li class="nav-item">
+                  <a class="nav-link" href="account.html">บัญชี</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="account_boss.html">บัญชี</a>
+                  <a class="nav-link" href="account_moneym.html" style="font-weight: bold;color: #fff;">เงินเดือน</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="user_boss.html">คลังวัสดุอุปกรณ์</a>
+                  <a class="nav-link" href="meterial_account.html">คลังวัสดุอุปกรณ์</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="boss_customer.html">ข้อมูลลูกค้า</a>
+                    <a class="nav-link" href="peper.html">โครงการ</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="peper_admin.html">โครงการ</a>
+                    <a class="nav-link" href="requrst_meterial.html">แจ้งเตือนเบิกของ</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="requrst_money.html">คำขอ (เงินเดือนพนักงาน)</a>
+                    <a class="nav-link" href="receipt.html">ใบเสร็จ</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="receipt_m.html">ใบแจ้งหนี้</a>
                 </li>
                 <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
@@ -73,9 +76,8 @@
     </nav>
     <div class="container-fluid">
         <br>
-        <h1>ข้อมูลผู้ใช้</h1>
-        <p>ดูข้อมูลผู้ใช้</p>
-        <br>
+        <h1>เบิกงานพนักงาน</h1>
+        <p>จัดการข้อมูลเบิกงานพนักงาน</p>
         <div class="dropdown">
             <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" id="change_search">
               ทั้งหมด
@@ -93,18 +95,15 @@
             <table class="table table-hover">
                 <thead>
                   <tr>
-                    <th>ชื่อผู้ใช้</th>
                     <th>ชื่อ</th>
                     <th>นามสกุล</th>
                     <th>ชื่อภาษาอังกฤษ</th>
                     <th>นามสกุลภาษาอังกฤษ</th>
-                    <th>ชื่อเล่น</th>
                     <th>บัตรประชาชน</th>
-                    <th>สถานะ</th>
                     <th>เบอร์โทรศัพท์</th>
                     <th>ที่อยู่</th>
-                    <th>สิทธิ์</th><!-- ถึงนี่-->
                     <th>เงินเดือน</th>
+                    <th>แก้ไข</th>
                   </tr>
                 </thead>
                 <tbody id="show_user">
@@ -112,12 +111,12 @@
                 </tbody>
             </table>
         </div>
+        
     </div>
     <script>
-        var pageIndex = ['ผู้ดูแลระบบ','เจ้าของกิจการ','พนักงานบัญชี','พนักงานทั่วไป']
+        var pageIndex = ['ทั้งหมด','ผู้ดูแลระบบ','เจ้าของกิจการ','พนักงานบัญชี','พนักงานทั่วไป']
         $('#name_session').text(sessionStorage.getItem("login"))
-        $('#level').text(pageIndex[sessionStorage.getItem("permission")-1])
-
+        $('#level').text(pageIndex[sessionStorage.getItem("permission")])
         var firebaseConfig = {
     			apiKey: "AIzaSyCxAieSpxdtzyRRuesH7zWcSraaTwHjVlI",
     			authDomain: "web-developer-3d7db.firebaseapp.com",
@@ -138,24 +137,21 @@
         function search(number){
             let ref=firebase.database().ref('database_manager/user')
             let type = number
-            ref.once('value',(snapshot)=>{
+	        ref.once('value',(snapshot)=>{
                 $('#show_user').empty()
                 Object.values(snapshot.val()).forEach((item)=>{
                     if(type == 0 || type == item['permission']){
                         $('#show_user').append(`
                         <tr>
-                            <td>${item['username']}</td>
-                            <td>${item['name']}</td>
-                            <td>${item['lastname']}</td>
-                            <td>${item['name_eng']}</td>
-                            <td>${item['lastname_eng']}</td>
-                            <td>${item['nickname']}</td>
-                            <td>${item['number_citizen']}</td>
-                            <td>${item['status']}</td>
-                            <td>${item['phone']}</td>
-                            <td>${item['address']}</td>
-                            <td>${item['permission']}</td>
-                            <td>${item['money']}</td>
+                            <td><input value='${item['name']}' class='b${item['username']}' disabled></td>
+                            <td><input value='${item['lastname']}' class='c${item['username']}' disabled></td>
+                            <td><input value='${item['name_eng']}' class='d${item['username']}' disabled></td>
+                            <td><input value='${item['lastname_eng']}' class='e${item['username']}' disabled></td>
+                            <td><input value='${item['number_citizen']}' class='g${item['username']}' disabled></td>
+                            <td><input value='${item['phone']}' class='i${item['username']}' disabled></td>
+                            <td><input value='${item['address']}' class='j${item['username']}' disabled></td>
+                            <td><input type='number' value='${item['money']}' class='m${item['username']}' disabled></td>
+                            <td><button onclick='removeAt("${item['username']}")' class='choose_table'>เบิก</button></td>
                         </tr>
                         `)
                     }
@@ -163,6 +159,75 @@
             })
         }
 
+        function editAt(name){
+            if($('#choose'+name).text()=='เลือก'){
+                $('.b'+name).removeAttr('disabled')
+                $('.c'+name).removeAttr('disabled')
+                $('.d'+name).removeAttr('disabled')
+                $('.e'+name).removeAttr('disabled')
+                $('.f'+name).removeAttr('disabled')
+                $('.g'+name).removeAttr('disabled')
+                $('.h'+name).removeAttr('disabled')
+                $('.i'+name).removeAttr('disabled')
+                $('.j'+name).removeAttr('disabled')
+                $('.k'+name).removeAttr('disabled')
+                $('.m'+name).removeAttr('disabled')
+                $('#choose'+name).text('บันทึก')
+            }else{
+                let ref=firebase.database().ref('database_manager/user/'+$('.a'+name).val())
+		        ref.child('name').set($('.b'+name).val())
+		        ref.child('lastname').set($('.c'+name).val())
+		        ref.child('permission').set($('.k'+name).val())
+                ref.child('name_eng').set($('.d'+name).val())
+                ref.child('lastname_eng').set($('.e'+name).val())
+                ref.child('nickname').set($('.f'+name).val())
+                ref.child('number_citizen').set($('.g'+name).val())
+                ref.child('status').set($('.h'+name).val())
+                ref.child('phone').set($('.i'+name).val())
+                ref.child('address').set($('.j'+name).val())
+                ref.child('money').set($('.m'+name).val())
+                $('.b'+name).prop('disabled', true)
+                $('.c'+name).prop('disabled', true)
+                $('.d'+name).prop('disabled', true)
+                $('.e'+name).prop('disabled', true)
+                $('.f'+name).prop('disabled', true)
+                $('.g'+name).prop('disabled', true)
+                $('.h'+name).prop('disabled', true)
+                $('.i'+name).prop('disabled', true)
+                $('.j'+name).prop('disabled', true)
+                $('.k'+name).prop('disabled', true)
+                $('.m'+name).prop('disabled', true)
+                $('#choose'+name).text('เลือก')
+            }
+            
+        }
+
+        function removeAt(name){
+            Swal.fire({
+              title: 'ต้องการส่งคำขอเบิกงานหรือไม่?',
+              showDenyButton: true,
+              showCancelButton: false,
+              confirmButtonText: `ลบเลย`,
+              denyButtonText: `ยกเลิก`,
+            }).then((result) => {
+              /* Read more about isConfirmed, isDenied below */
+              if (result.isConfirmed) {
+                Swal.fire('ส่งคำขอสำเร็จ!', '', 'success')
+                let make_date = (""+new Date().toLocaleDateString()+"|"+new Date().toLocaleTimeString()+"")
+                let ref=firebase.database().ref('database_manager/money/'+make_date)
+                ref.child('date').set(new Date().toLocaleDateString())
+                ref.child('time').set(new Date().toLocaleTimeString())
+                ref.child('name').set(sessionStorage.getItem("login"))
+                ref.child('member').set(sessionStorage.getItem("token"))
+                ref.child('type').set("เงินเดือนพนักงาน")
+                ref.child('money').set($('.m'+name).val())
+                ref.child('more').set("คำขอเบิกเงินพนักงาน")
+              } else if (result.isDenied) {
+                Swal.fire('ยกเลิก', '', 'info')
+              }
+            })
+            
+        }
     </script>
 </body>
 </html>

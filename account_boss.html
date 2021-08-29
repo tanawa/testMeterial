@@ -14,7 +14,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap" rel="stylesheet">
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.4/dist/sweetalert2.all.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
@@ -42,15 +42,10 @@
         <div class="collapse navbar-collapse" id="collapsibleNavbar">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <button type="button" class="btn btn-primary btn-block">
-                        <a id="level"></a> <span class="badge badge-light" id="name_session">Link</span>
-                    </button>  
-                </li>
-                <li class="nav-item">
                   <a class="nav-link" href="boss.html">ข้อมูลผู้ใช้</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="account_boss.html">บัญชี</a>
+                  <a class="nav-link" href="account_boss.html" style="font-weight: bold;color: #fff;">บัญชี</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="user_boss.html">คลังวัสดุอุปกรณ์</a>
@@ -59,16 +54,19 @@
                     <a class="nav-link" href="boss_customer.html">ข้อมูลลูกค้า</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="peper_admin.html">สัญญา</a>
+                    <a class="nav-link" href="peper_admin.html">โครงการ</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="requrst_money.html">คำขอ (เงินเดือนพนักงาน)</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="edit_user.html">แก้ไขข้อมูล</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" onclick="logout()">ออกจากระบบ</a>
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                     <span class="badge badge-light" id="name_session">Link</span>
+                  </a>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" href="edit_user.html">แก้ไขข้อมูล</a>
+                    <a class="dropdown-item" onclick="logout()">ออกจากระบบ</a>
+                  </div>
                 </li>
               </ul>
         </div>

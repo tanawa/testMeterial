@@ -14,7 +14,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap" rel="stylesheet">
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.4/dist/sweetalert2.all.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
@@ -42,21 +42,22 @@
         <div class="collapse navbar-collapse" id="collapsibleNavbar">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <button type="button" class="btn btn-primary btn-block">
-                        <a id="level"></a> <span class="badge badge-light" id="name_session">Link</span>
-                    </button>  
-                </li>
-                <li class="nav-item">
                   <a class="nav-link" href="admin.html">ข้อมูลผู้ใช้</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="customer.html">ข้อมูลลูกค้า</a>
+                  <a class="nav-link" href="add_user.html">เพิ่มผู้ใช้</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="edit_user.html">แก้ไขข้อมูล</a>
-                  </li>
-                <li class="nav-item">
-                  <a class="nav-link" onclick="logout()">ออกจากระบบ</a>
+                  <a class="nav-link" href="customer.html" style="font-weight: bold;color: #fff;">ข้อมูลลูกค้า</a>
+                </li>
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                     <span class="badge badge-light" id="name_session">Link</span>
+                  </a>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" href="edit_user.html">แก้ไขข้อมูล</a>
+                    <a class="dropdown-item" onclick="logout()">ออกจากระบบ</a>
+                  </div>
                 </li>
               </ul>
         </div>
@@ -70,10 +71,12 @@
             <table class="table table-hover">
                 <thead>
                   <tr>
+                    <th>รหัสลูกค้า</th>
                     <th>ชื่อ</th>
                     <th>นามสกุล</th>
-                    <th>รายละเอียด</th>
-                    <th>รหัสลูกค้า</th>
+                    <th>ที่อยู่</th>
+                    <th>เบอร์โทรศัพท์</th>
+                    <th>เพิ่มเติม</th>
                     <th>แก้ไข</th>
                     <th>ลบ</th>
                   </tr>
@@ -82,12 +85,23 @@
                   
                 </tbody>
                 <tr>
+                    <td>
+                        <div class="form-group">
+                          <select id="create_prefix" style="width: 100%;">
+                            <option>นาย</option>
+                            <option>นาง</option>
+                            <option>นางสาว</option>
+                          </select>
+                        </div>
+                    </td>
+                    <td><input type="text" placeholder="รหัสลูกค้า" id="create_key"></td>
                     <td><input type="text" placeholder="ชื่อ" id="create_name"></td>
                     <td><input type="text" placeholder="นามสกุล" id="create_lastname"></td>
+                    <td><input type="text" placeholder="ที่อยู่" id="create_address"></td>
+                    <td><input type="text" placeholder="เบอร์โทรศัพท์" id="create_phone"></td>
                     <td><input type="text" placeholder="เพิ่มเติม" id="create_more"></td>
-                    <td><input type="text" placeholder="รหัสลูกค้า" id="create_key"></td>
-                    <td><button onclick="save()">บันทึก</button></td>
-                    <td><button>ล้าง</button></td>
+                    <td><button onclick="save()"><i class="fa fa-floppy-o"></i> บันทึก</button></td>
+                    
                 </tr>
             </table>
         </div>
@@ -118,8 +132,19 @@
                 Object.values(snapshot.val()).forEach((item)=>{
                     $('#show_user').append(`
                         <tr>
+                            <td>
+                                <div class="form-group">
+                                  <select class="e${item['key']}" style="width: 100%;" disabled>
+                                    <option>นาย</option>
+                                    <option>นาง</option>
+                                    <option>นางสาว</option>
+                                  </select>
+                                </div>
+                            </td>
                             <td><input value='${item['name']}' class='a${item['key']}' disabled></td>
                             <td><input value='${item['lastname']}' class='b${item['key']}' disabled></td>
+                            <td><input value='${item['address']}' class='j${item['key']}' disabled></td>
+                            <td><input value='${item['phone']}' class='f${item['key']}' disabled></td>
                             <td><input value='${item['more']}' class='c${item['key']}' disabled></td>
                             <td><input value='${item['key']}' class='d${item['key']}' disabled></td>
                             <td><button onclick='editAt("${item['key']}")' id="choose${item['key']}" class='choose_table'>เลือก</button></td>
@@ -135,6 +160,10 @@
                 $('.a'+name).removeAttr('disabled')
                 $('.b'+name).removeAttr('disabled')
                 $('.c'+name).removeAttr('disabled')
+                $('.e'+name).removeAttr('disabled')
+                $('.f'+name).removeAttr('disabled')
+                $('.j'+name).removeAttr('disabled')
+                $('.g'+name).removeAttr('disabled')
                 $('.d'+name).removeAttr('disabled')
                 $('#choose'+name).text('บันทึก')
             }else{
@@ -143,11 +172,25 @@
 		        ref.child('lastname').set($('.b'+name).val())
 		        ref.child('more').set($('.c'+name).val())
                 ref.child('key').set($('.d'+name).val())
+                ref.child('address').set($('.j'+name).val())
+                ref.child('phone').set($('.f'+name).val())
+                ref.child('prefix').set($('.b'+name).val())
                 $('.a'+name).prop('disabled', true)
                 $('.b'+name).prop('disabled', true)
                 $('.c'+name).prop('disabled', true)
                 $('.d'+name).prop('disabled', true)
+                $('.e'+name).prop('disabled', true)
+                $('.f'+name).prop('disabled', true)
+                $('.g'+name).prop('disabled', true)
+                $('.j'+name).prop('disabled', true)
                 $('#choose'+name).text('เลือก')
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'แก้ไขข้อมูลสำเร็จ',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
             }
             
         }
@@ -163,12 +206,25 @@
             let b = $('#create_lastname').val()
             let c = $('#create_more').val()
             let d = $('#create_key').val()
-            if(a !='' && b != '' && c != '' && d !='' ){
+            let e = $('#create_address').val()
+            let f = $('#create_phone').val()
+            let g = $('#create_prefix').val()
+            if(a !='' && b != '' && c != '' && d !='' && e !='' && f !=''){
                 let ref=firebase.database().ref('database_manager/customer/'+d)
                 ref.child('name').set(a)
                 ref.child('lastname').set(b)
+                ref.child('address').set(e)
+                ref.child('phone').set(f)
+                ref.child('prefix').set(g)
                 ref.child('more').set(c)
                 ref.child('key').set(d)
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'บันทึกข้อมูลสำเร็จ',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
                 window.location.reload()
             }
         }

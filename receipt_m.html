@@ -58,10 +58,10 @@
                     <a class="nav-link" href="requrst_meterial.html">แจ้งเตือนเบิกของ</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="receipt.html" style="font-weight: bold;color: #fff;">ใบเสร็จ</a>
+                    <a class="nav-link" href="receipt.html" >ใบเสร็จ</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="receipt_m.html">ใบแจ้งหนี้</a>
+                    <a class="nav-link" href="receipt_m.html" style="font-weight: bold;color: #fff;">ใบแจ้งหนี้</a>
                 </li>
                 <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
@@ -77,8 +77,8 @@
     </nav>
     <div class="container-fluid">
         <br>
-        <h1>ใบเสร็จลูกค้า</h1>
-        <p>สร้างใบเสร็จลูกค้า</p>
+        <h1>ใบเสร็จแจ้งหนี้</h1>
+        <p>สร้างแจ้งหนี้ลูกค้า</p>
         <br>
             <center>
             <div class="card receipt">
@@ -117,7 +117,7 @@
                         <select id="a2" width="100%">
                                         
                         </select>
-                    </div>    
+                    </div>      
                     <input type="date" placeholder="วันที่ใบแจ้งหนี้" id="a3">
                     <input type="date" placeholder="วันที่ครบกำหนด" id="a4">
                     <input type="number" placeholder="ค่าขนส่ง" id="a5">
@@ -127,7 +127,6 @@
                 </div>
             </div>
         </center>
-            
         
         
     </div>
@@ -149,7 +148,6 @@
   			};
 	  	firebase.initializeApp(firebaseConfig);
   		firebase.analytics();
-
         var ref = firebase.database().ref('database_manager/material')
         ref.once('value',(snapshot)=>{
             console.log((snapshot.val()))
@@ -157,6 +155,7 @@
                 $('#money_name').append('<option>'+item['name']+'</option>')
             })
         })
+
         var ref = firebase.database().ref('database_manager/customer')
         ref.once('value',(snapshot)=>{
             console.log((snapshot.val()))
@@ -197,7 +196,7 @@
             let a5 = $('#a5').val()
             let a6 = $('#a6').val()
             if(a1 != '' && a2 != '' && a3 != '' && a4 != '' && a5 != '' && a6 != ''){
-                ref=firebase.database().ref('database_manager/receipt/'+a1)
+                ref=firebase.database().ref('database_manager/receipt_m/'+a1)
                 ref.child('customer').set(a2)
                 ref.child('date_end').set(a4)
                 ref.child('date_start').set(a3)
@@ -212,7 +211,7 @@
                 $('#a5').val('')
                 $('#a6').val('')
                 item = []
-		        window.open('receipt_print.html?search='+a1, '_blank').focus();
+		        window.open('receipt_print_m.html?search='+a1, '_blank').focus();
             }
         }
     </script>

@@ -14,7 +14,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap" rel="stylesheet">
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.4/dist/sweetalert2.all.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
@@ -42,21 +42,19 @@
         <div class="collapse navbar-collapse" id="collapsibleNavbar">
           <ul class="navbar-nav">
             <li class="nav-item">
-                <button type="button" class="btn btn-primary btn-block">
-                    <a id="level"></a> <span class="badge badge-light" id="name_session">Link</span>
-                </button>  
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="user.html">คลังวัสดุอุปกรณ์</a>
+              <a class="nav-link" href="user.html" style="font-weight: bold;color: #fff;">คลังวัสดุอุปกรณ์</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="requrst.html">คำขอ</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="edit_user.html">แก้ไขข้อมูล</a>
-              </li>
-            <li class="nav-item">
-              <a class="nav-link" onclick="logout()">ออกจากระบบ</a>
+            <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                     <span class="badge badge-light" id="name_session">Link</span>
+                  </a>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" href="edit_user.html">แก้ไขข้อมูล</a>
+                    <a class="dropdown-item" onclick="logout()">ออกจากระบบ</a>
+                  </div>
             </li>
           </ul>
         </div>
@@ -71,8 +69,14 @@
             </button>
             <div class="dropdown-menu">
               <a class="dropdown-item" onclick="chn_search(0)">ทั้งหมด</a>
-              <a class="dropdown-item" onclick="chn_search(1)">อนุมัติ</a>
-              <a class="dropdown-item" onclick="chn_search(2)">ถูกยกเลิก</a>
+              <a class="dropdown-item" onclick="chn_search(1)">ไม้</a>
+              <a class="dropdown-item" onclick="chn_search(2)">หิน</a>
+              <a class="dropdown-item" onclick="chn_search(3)">กระจก</a>
+              <a class="dropdown-item" onclick="chn_search(4)">ปูน</a>
+              <a class="dropdown-item" onclick="chn_search(5)">หลังคา</a>
+              <a class="dropdown-item" onclick="chn_search(6)">เพดาน</a>
+              <a class="dropdown-item" onclick="chn_search(7)">ผ้า</a>
+              <a class="dropdown-item" onclick="chn_search(8)">เหล็ก</a>
             </div>
         </div>
         <br>
@@ -80,13 +84,12 @@
             <table class="table table-hover">
                 <thead>
                   <tr>
-                    <th>อุปกรณ์</th>
+                    <th>รหัส</th>
                     <th>ชื่อ</th>
                     <th>ประเภท</th>
                     <th>จำนวน</th>
                     <th>วันที่</th>
                     <th>เวลา</th>
-                    <th>สถานะ</th>
                     <th>เบิก</th>
                   </tr>
                 </thead>
@@ -98,7 +101,7 @@
     </div>
     <script>
         var pageIndex = ['ทั้งหมด','ผู้ดูแลระบบ','เจ้าของกิจการ','พนักงานบัญชี','พนักงานทั่วไป']
-        var statusIndex = ['ทั้งหมด','อนุมัติ','ถูกยกเลิก']
+        var statusIndex = ['ทั้งหมด','ไม้','หิน','กระจก','ปูน','หลังคา','เพดาน','ผ้า','เหล็ก']
         $('#name_session').text(sessionStorage.getItem("login"))
         $('#level').text(pageIndex[sessionStorage.getItem("permission")])
         var firebaseConfig = {
@@ -124,7 +127,7 @@
 	        ref.once('value',(snapshot)=>{
                 $('#show_user').empty()
                 Object.values(snapshot.val()).forEach((item)=>{
-                    if(type == 'อนุมัติ' || type == item['status']){
+                    if(type == 'ทั้งหมด' || type == item['type'] || 0 == number){
                         $('#show_user').append(`
                         <tr>
                             <td>${item['key']}</td>
@@ -133,24 +136,11 @@
                             <td>${item['count']}</td>
                             <td>${item['date']}</td>
                             <td>${item['time']}</td>
-                            <td>${item['status']}</td>
                             <td><input type="number" id="a${item['key']}" style="display:none;width:100%;"><button onclick="editAt('${item['key']}')" class='btn-block choose_table' id='choose${item['key']}'>เลือก</button></td>
                         </tr>
                         `)
-                    }else if(type == 'ทั้งหมด' || type == item['status']){
-                        $('#show_user').append(`
-                        <tr>
-                            <td>${item['key']}</td>
-                            <td>${item['name']}</td>
-                            <td>${item['type']}</td>
-                            <td>${item['count']}</td>
-                            <td>${item['date']}</td>
-                            <td>${item['time']}</td>
-                            <td>${item['status']}</td>
-                            <td></td>
-                        </tr>
-                        `)
                     }
+                    
                 })
             })
         }
@@ -165,8 +155,22 @@
 		        ref.child('count').set($('#a'+name).val())
 		        ref.child('member').set(sessionStorage.getItem("token"))
 		        ref.child('name').set(name)
+                ref=firebase.database().ref('database_manager/material/'+name+"/count")
+                ref.once("value",(snapshot)=>{
+                    let ref1=firebase.database().ref('database_manager/material/'+name)
+                    ref1.child("count").set(snapshot.val()-$('#a'+name).val())
+                    search(0)
+                })
+                $('#a'+name).val()
                 $('#a'+name).hide()
                 $('#choose'+name).text('เลือก')
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'บันทึกข้อมูลสำเร็จ',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
             }
         }
     </script>
