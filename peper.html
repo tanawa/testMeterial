@@ -11,10 +11,11 @@
     <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-analytics.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-database.js"></script>
+     <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-storage.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap" rel="stylesheet">
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.4/dist/sweetalert2.all.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
@@ -42,38 +43,42 @@
         <div class="collapse navbar-collapse" id="collapsibleNavbar">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <button type="button" class="btn btn-primary btn-block">
-                        <a id="level"></a> <span class="badge badge-light" id="name_session">Link</span>
-                    </button>  
+                  <a class="nav-link" href="account.html">บัญชี</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="account.html">บัญชี</a>
+                  <a class="nav-link" href="account_moneym.html">เงินเดือน</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="meterial_account.html">คลังวัสดุอุปกรณ์</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="peper.html">สัญญา</a>
+                    <a class="nav-link" href="peper.html" style="font-weight: bold;color: #fff;">โครงการ</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="requrst_meterial.html">คำขอ (อุปกรณ์)</a>
+                    <a class="nav-link" href="requrst_meterial.html">แจ้งเตือนเบิกของ</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="receipt.html">ใบเสร็จ</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="edit_user.html">แก้ไขข้อมูล</a>
+                    <a class="nav-link" href="receipt_m.html">ใบแจ้งหนี้</a>
                 </li>
-                <li class="nav-item">
-                  <a class="nav-link" onclick="logout()">ออกจากระบบ</a>
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                     <span class="badge badge-light" id="name_session">Link</span>
+                  </a>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" href="edit_user.html">แก้ไขข้อมูล</a>
+                    <a class="dropdown-item" onclick="logout()">ออกจากระบบ</a>
+                  </div>
                 </li>
               </ul>
         </div>
     </nav>
     <div class="container-fluid">
         <br>
-        <h1>สัญญา</h1>
-        <p>จัดการข้อมูลสัญญา</p>
+        <h1>โครงการ</h1>
+        <p>จัดการข้อมูลโครงการ</p>
         <br>
         <div class="scroll-width">
             <table class="table table-hover">
@@ -85,7 +90,7 @@
                     <th>เริ่มสัญญา</th>
                     <th>สิ้นสุดสัญญา</th>
                     <th>สถานะ</th>
-                    <th>แก้ไข</th>
+                    <th>ลบ</th>
                   </tr>
                 </thead>
                 <tbody id="show_user">
@@ -95,12 +100,10 @@
                     <td><input type="text" placeholder="ชื่อบริษัท" id="name"></td>
                     <td><input type="number" placeholder="ประเมินราคา" id="money"></td>
                     <td>
-                        <textarea id="order" cols='60' rows='10'>
-
-                        </textarea>
+                        <input type="file" name="" id="order">
                     <td><input type="date" placeholder="วันนัดหมาย" id="date"></td>
                     <td><input type="date" placeholder="วันนัดสิ้นสุด" id="dateend"></td>
-                    <td><button onclick="save()">บันทึก</button></td>
+                    <td><button onclick="save()"><i class="fa fa-floppy-o"></i> บันทึก</button></td>
                 </tr>
             </table>
         </div>
@@ -126,6 +129,7 @@
         search()
         function search(){
             let ref=firebase.database().ref('database_manager/contract')
+            $('#show_user').empty()
 	        ref.once('value',(snapshot)=>{
                 for(let n= 0;n<Object.keys(snapshot.val()).length;n++){
                     let item = snapshot.val()[Object.keys(snapshot.val())[n]]
@@ -135,14 +139,16 @@
                             
                             let sub_data = Object.values(data[Object.keys(data)[i]])
                             let keys = (Object.keys(snapshot.val())[n]+'/'+Object.keys(item)+'/'+Object.keys(data)[i])
-                            $('#show_user').append(`
+                            var storageRef = firebase.storage().ref(sub_data[3]);
+                            storageRef.getDownloadURL().then(function(downloadURL) {
+                                $('#show_user').append(`
                                 <tr>
                                     <td>${sub_data[4]}</td>
                                     <td>${sub_data[2]}</td>
                                     <td>
-                                        <textarea cols='60' rows='10' class='textarea' id='order_edit${sub_data[4]}'>
+                                        <a href="${downloadURL}" target="_blank">
                                             ${sub_data[3]}
-                                        </textarea>
+                                        </a>
                                     </td>
                                     <td>${sub_data[0]}</td>
                                     <td>${sub_data[1]}</td>
@@ -150,10 +156,12 @@
                                         ${sub_data[5]}
                                     </td>
                                     <td>
-                                        <button onclick="update('${keys}','${sub_data[4]}')">อัพเดต</button>
+                                        <button onclick="delete_p('${keys}','${sub_data[4]}')">ลบ</button>
                                     </td>
                                 </tr>
                                 `)
+                            });
+                            
                         }
                     })
                 }
@@ -161,14 +169,24 @@
             
         }
 
+        var file_temp = ""
+
+        document.getElementById("order").addEventListener('change',(e)=>{
+            file_temp = document.getElementById("order").files[0]
+            console.log(file_temp)
+        })
         function save(){
             let a = $('#name').val()
             let b = $('#money').val()
             let c = $('#date').val()
             let d = $('#dateend').val()
-            let e = $('#order').val()
+            let e = file_temp.name
+            var storageRef = firebase.storage().ref(file_temp.name);
+            console.log(file_temp.name)
+            
             if(a !='' && b != '' && c != '' && d !=''){
                 let make_date = (""+new Date().toLocaleDateString()+"|"+new Date().toLocaleTimeString()+"")
+                
                 let ref=firebase.database().ref('database_manager/contract/'+make_date)
                 ref.child('money').set(b)
 				ref.child('owner').set(a)
@@ -176,20 +194,60 @@
 				ref.child('dateend').set(d)
                 ref.child('name').set(e)
 				ref.child('status').set('กำลังดำเนินการ')
+
+                storageRef.put(file_temp).then((snapshot) => {
+                    console.log(snapshot.val());
+                });
+
 				$('#name').val('')
 				$('#money').val('')
 				$('#date').val('')
 				$('#dateend').val('')
                 $('#order').val('')
-                window.location.reload()
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'บันทึกข้อมูลสำเร็จ',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+                setTimeout(function(){
+                    window.location.reload()
+                },1000)
+                
             }
         }
 
-        function update(keys,name){
+        function delete_p(keys,name){
             let e = $('#order_edit'+name).val()
             let ref=firebase.database().ref('database_manager/contract/'+keys)
-            ref.child('name').set(e)
-            window.location.reload()
+            console.log(keys)
+            ref.once("value",(snapshot)=>{
+                Swal.fire({
+                  title: 'ต้องการลบรายการนี้หรือไม่?',
+                  showDenyButton: true,
+                  showCancelButton: false,
+                  confirmButtonText: `ลบเลย`,
+                  denyButtonText: `ยกเลิก`,
+                }).then((result) => {
+                  /* Read more about isConfirmed, isDenied below */
+                  if (result.isConfirmed) {
+                    Swal.fire('ลบสำเร็จ!', '', 'success')
+                    console.log(snapshot.val()['name'])
+                
+                    var storageRef = firebase.storage().ref(snapshot.val()['name']);
+                    storageRef.delete()
+                    
+                    let ref1=firebase.database().ref('database_manager/contract/'+keys)
+                    ref1.remove()
+                    setTimeout(function(){
+                        window.location.reload()
+                    },1000)
+                  } else if (result.isDenied) {
+                    Swal.fire('ยกเลิก การลบรายนี้', '', 'info')
+                  }
+                }) 
+            }) 
         }
     </script>
 </body>

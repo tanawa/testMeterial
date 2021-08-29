@@ -74,7 +74,28 @@
 				<td>ราคารวม</td>
 				<td><p id="sum">none</p></td>
 			</tr>
-			
+			<tr>
+				<td colspan="3">
+					<b>หมายเหตุ:</b>
+					<p>หัก ณ ที่จ่าย 3% (เฉพาะค่าแรง)</p>
+				</td>
+				<td></td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					<b>เงื่อนไขการชำระเงิน:</b>
+					<p>ภายใน 30 วัน</p>
+				</td>
+				<td></td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					<b>ข้อมูลการชำระเงิน:</b>
+					<p>ชื่อบัญชี: สุพัฒน์การช่าง</p>
+					<p>เลขที่บัญชี: 123-4-56789-0 ธนาคาร: กสิกรไทย สาขา: ท่าแพ</p>
+				</td>
+				<td></td>
+			</tr>
 		</table>
 	</center>
 	<script type="text/javascript">
@@ -92,7 +113,7 @@
 	  	firebase.initializeApp(firebaseConfig);
   		firebase.analytics();
 
-  		var ref = firebase.database().ref('database_manager/receipt/'+myParam)
+  		var ref = firebase.database().ref('database_manager/receipt_m/'+myParam)
   		ref.once('value', (snapshot)=>{
   			$("#key").text("เลขที่ใบแจ้งหนี้:	"+snapshot.val()['key'])
   			$("#customer").text(snapshot.val()['customer'])

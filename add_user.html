@@ -19,35 +19,56 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
+    <script>
+        if(sessionStorage.getItem("login")==null || sessionStorage.getItem("login")==''){
+            window.location.href = "index.html"
+        }
+    </script>
 	  <link rel="stylesheet" type="text/css" href="main.css">
 </head>
 <body>
+    <nav class="navbar navbar-expand-md bg-primary navbar-dark">
+        <!-- Brand -->
+        <a class="navbar-brand" href="#">material</a>
+        
+        <!-- Toggler/collapsibe Button -->
+        <button class="navbar-toggler block" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      
+        <!-- Navbar links -->
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="admin.html">ข้อมูลผู้ใช้</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="add_user.html" style="font-weight: bold;color: #fff;">เพิ่มผู้ใช้</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="customer.html">ข้อมูลลูกค้า</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                 <span class="badge badge-light" id="name_session">Link</span>
+              </a>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="edit_user.html">แก้ไขข้อมูล</a>
+                <a class="dropdown-item" onclick="logout()">ออกจากระบบ</a>
+              </div>
+            </li>
+          </ul>
+        </div>
+    </nav>
     <div class="container">
         <div>
           <div class="card login-card">
             <div class="card-body">
-              <div id="tab_login">
-                <img src="logo.png" width="100%">
-                <div class="form-group">
-                  <label for="text">ชื่อผู้ใช้:</label>
-                  <input type="text" class="form-control" placeholder="กรุณากรอกชื่อผู้ใช้" id="login_username">
-                </div>
-                <div class="form-group">
-                  <label for="pwd">รหัสผ่าน:</label>
-                  <input type="password" class="form-control" placeholder="กรุณากรอกรหัสผ่าน" id="login_password">
-                </div>
-                <div class="form-group form-check">
-                  
-                </div>
-                <button type="submit" class="btn btn-primary active btn-block" onclick="login()"><i class="fa fa-sign-in"></i> เข้าสู่ระบบ</button>
-                <!--<button type="submit" class="btn btn-primary btn-block" onclick="showTab(2)">สมัครสมาชิก</button>-->
-              </div>
-              <div id="tab_register">
+              <div >
                 <img src="logo.png" width="100%">
                 <div class="form-group">
                   <label for="text">คำนำหน้า&nbsp;:&nbsp;</label>
-                  <select id="prefix" style="width: 100%;">
+                  <select id="register_prefix" style="width: 100%;">
                     <option>นาย</option>
                     <option>นาง</option>
                     <option>นางสาว</option>
@@ -72,14 +93,16 @@
                 <div class="form-group form-check">
                   
                 </div>
-                <button type="submit" class="btn btn-primary active btn-block" onclick="register()">ลงทะเบียน</button>
-                <button type="submit" class="btn btn-primary btn-block" onclick="showTab(1)"><i class="fa fa-sign-in"></i> เข้าสู่ระบบ</button>
+                <button type="submit" class="btn btn-primary active btn-block" onclick="register()"><i class="fa fa-user-plus"></i> ลงทะเบียน</button>
               </div>
             </div>
           </div>
         </div>
     </div>
     <script>
+      var pageIndex = ['ทั้งหมด','ผู้ดูแลระบบ','เจ้าของกิจการ','พนักงานบัญชี','พนักงานทั่วไป']
+      $('#name_session').text(sessionStorage.getItem("login"))
+      $('#level').text(pageIndex[sessionStorage.getItem("permission")-1])
       var firebaseConfig = {
     			apiKey: "AIzaSyCxAieSpxdtzyRRuesH7zWcSraaTwHjVlI",
     			authDomain: "web-developer-3d7db.firebaseapp.com",
@@ -104,33 +127,6 @@
         }
       }
 
-      if(sessionStorage.getItem("login")!=null && sessionStorage.getItem("login")!='' && sessionStorage.getItem("permission")!= null && sessionStorage.getItem("permission")!=''){
-          let ref=firebase.database().ref('database_manager/user/'+sessionStorage.getItem("token"))
-          ref.once('value',(snapshot)=>{    
-            sessionStorage.setItem("login",snapshot.val()['name']+" "+snapshot.val()['lastname'])
-            sessionStorage.setItem("permission",snapshot.val()['permission'])
-            sessionStorage.setItem("token",snapshot.val()['username'])
-            window.location.href = pageIndex[sessionStorage.getItem("permission")-1]+".html"
-          })
-        
-      }
-
-      function login(){
-        let temp_user = $('#login_username').val()
-        let temp_pwd = $('#login_password').val()
-        if( temp_user != '' &&  temp_pwd != ''){
-          let ref=firebase.database().ref('database_manager/user/'+temp_user)
-          ref.once('value',(snapshot)=>{
-            if(snapshot.val()['password'] == temp_pwd){
-              sessionStorage.setItem("login",snapshot.val()['name']+" "+snapshot.val()['lastname'])
-              sessionStorage.setItem("permission",snapshot.val()['permission'])
-              sessionStorage.setItem("token",temp_user)
-              window.location.href = pageIndex[snapshot.val()['permission']-1]+".html"
-            }
-          })
-        }
-      }
-
       function register(){
         let temp_prefix = $('#register_prefix').val()
         let temp_user = $('#register_username').val()
@@ -145,20 +141,28 @@
           ref.child('name').set(temp_name)
           ref.child('lastname').set(temp_lst)
           ref.child('permission').set(4)
-          ref.child('phone').set('ยังไม่ได้กำหนดเบอร์')
-          ref.child('status').set('ยังไม่ได้กำหนดสถานะ')
           ref.child('nickname').set('ยังไม่ได้กำหนดชื่อเล่น')
           ref.child('number_citizen').set('ยังไม่ได้กำหนดเลขบัตรประชาชน')
           ref.child('name_eng').set('ยังไม่ได้กำหนดชื่อภาษาอังกฤษ')
           ref.child('lastname_eng').set('ยังไม่ได้กำหนดนามสกุลภาษาอังกฤษ')
+          ref.child('phone').set('ยังไม่ได้กำหนดเบอร์')
+          ref.child('status').set('ยังไม่ได้กำหนดสถานะ')
+          ref.child('address').set('ยังไม่ได้กำหนดที่อยู่')
+          ref.child('money').set(0)
+
           $('#register_username').val('')
           $('#register_password').val('')
           $('#register_name').val('')
           $('#register_lastname').val('')
           console.log('successful')
-          sessionStorage.setItem("login",temp_name+" "+temp_lst)
-          sessionStorage.setItem("permission",'4')
-          window.location.href = pageIndex[3]+".html"
+          Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: 'สร้างผู้ใช้สำเร็จ',
+            showConfirmButton: false,
+            timer: 1500
+          })
+          //window.location.href = pageIndex[0]+".html"
         }
       }
     </script>

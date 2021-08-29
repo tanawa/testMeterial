@@ -14,7 +14,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap" rel="stylesheet">
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.4/dist/sweetalert2.all.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
@@ -41,17 +41,16 @@
         <!-- Navbar links -->
         <div class="collapse navbar-collapse" id="collapsibleNavbar">
           <ul class="navbar-nav">
-            <li class="nav-item">
-                <button type="button" class="btn btn-primary btn-block">
-                    <a id="level"></a> <span class="badge badge-light" id="name_session">Link</span>
-                </button>  
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="index.html">กลับหน้าหลัก</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" onclick="logout()">ออกจากระบบ</a>
-            </li>
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                     <span class="badge badge-light" id="name_session">Link</span>
+                  </a>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" href="index.html">กลับ</a>
+                    <a class="dropdown-item" href="edit_user.html">แก้ไขข้อมูล</a>
+                    <a class="dropdown-item" onclick="logout()">ออกจากระบบ</a>
+                  </div>
+                </li>
           </ul>
         </div>
     </nav>
@@ -77,10 +76,39 @@
                   <label for="text">นามสกุล:</label>
                   <input type="text" class="form-control" placeholder="กรุณากรอกนามสกุล" id="edit_lastname">
                 </div>
+                <hr />
+                <div class="form-group">
+                  <label for="text">ชื่อภาษาอังกฤษ:</label>
+                  <input type="text" class="form-control" placeholder="กรุณากรอกชื่อภาษาอังกฤษ" id="edit_name_e">
+                </div>
+                <div class="form-group">
+                  <label for="text">นามสกุลภาษาอังกฤษ:</label>
+                  <input type="text" class="form-control" placeholder="กรุณากรอกนามสกุลภาษาอังกฤษ" id="edit_lastname_e">
+                </div>
+                <div class="form-group">
+                  <label for="text">ชื่อเล่น:</label>
+                  <input type="text" class="form-control" placeholder="กรุณากรอกชื่อเล่น" id="edit_nickname">
+                </div>
+                <div class="form-group">
+                  <label for="text">เลขบัตรประชาชน:</label>
+                  <input type="text" class="form-control" placeholder="กรุณากรอกเลขบัตรประชาชน" id="edit_citizen_number">
+                </div>
+                <div class="form-group">
+                  <label for="text">ที่อยู่:</label>
+                  <input type="text" class="form-control" placeholder="กรุณากรอกที่อยู่" id="edit_address">
+                </div>
+                <div class="form-group">
+                  <label for="text">เบอร์โทรศัพท์:</label>
+                  <input type="text" class="form-control" placeholder="กรุณากรอกเบอร์โทรศัพท์" id="edit_phone">
+                </div>
+                <div class="form-group">
+                  <label for="text">สถานะ:</label>
+                  <input type="text" class="form-control" placeholder="กรุณากรอกสถานะ" id="edit_status">
+                </div>
                 <div class="form-group form-check">
                   
                 </div>
-                <button type="submit" class="btn btn-primary active btn-block" onclick="edit()">แก้ไข</button>
+                <button type="submit" class="btn btn-primary active btn-block" onclick="edit()"><i class="fa fa-floppy-o"></i>  แก้ไข</button>
               </div>
             </div>
           </div>
@@ -110,6 +138,12 @@
             $("#edit_password").val(snapshot.val()['password'])
             $("#edit_name").val(snapshot.val()['name'])
             $("#edit_lastname").val(snapshot.val()['lastname'])
+            $("#edit_name_e").val(snapshot.val()['nickname'])
+            $("#edit_nickname").val(snapshot.val()['name_eng'])
+            $("#edit_lastname_e").val(snapshot.val()['lastname_eng'])
+            $("#edit_citizen_number").val(snapshot.val()['number_citizen'])
+            $("#edit_phone").val(snapshot.val()['phone'])
+            $("#edit_status").val(snapshot.val()['status'])
         })
 
         function edit(){
@@ -117,12 +151,30 @@
             let temp_pwd = $('#edit_password').val()
             let temp_name = $('#edit_name').val()
             let temp_lst = $('#edit_lastname').val()
+            let temp_nic= $('#edit_nickname').val()
+            let temp_nameE = $('#edit_name_e').val()
+            let temp_lstE = $('#edit_lastname_e').val()
+            let temp_status = $('#edit_status').val()
+            let temp_citizenN = $('#edit_citizen_number').val()
+            let temp_phone = $('#edit_phone').val()
             if( temp_user != '' && temp_pwd != '' &&  temp_name != '' &&  temp_lst != ''){
             let ref=firebase.database().ref('database_manager/user/'+temp_user)
             ref.child('password').set(temp_pwd)
             ref.child('name').set(temp_name)
-            ref.child('lastname').set(temp_lst)
+            ref.child('name_eng').set(temp_nameE)
+            ref.child('lastname_eng').set(temp_lstE)
+            ref.child('nickname').set(temp_nic)
+            ref.child('number_citizen').set(temp_citizenN)
+            ref.child('phone').set(temp_phone)
+            ref.child('staus').set(temp_status)
             console.log('successful')
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: 'แก้ไขข้อมูลสำเร็จ',
+                showConfirmButton: false,
+                timer: 1500
+              })
             window.location.href = "index.html"
             }
       }
