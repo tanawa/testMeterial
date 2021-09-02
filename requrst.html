@@ -90,7 +90,8 @@
             for(let n= 0;n<Object.keys(snapshot.val()).length;n++){
                 let item = snapshot.val()[Object.keys(snapshot.val())[n]]
                 console.log(Object.keys(snapshot.val())[n])
-                Object.values(item).forEach((data)=>{
+                for(let k= 0;k<Object.keys(item).length;k++){
+                    let data = item[Object.keys(item)[k]]
                     for(let i= 0;i<Object.keys(data).length;i++){
                         
                         let sub_data = Object.values(data[Object.keys(data)[i]])
@@ -99,14 +100,21 @@
                             <div class="card" style='margin-bottom: 5px;'>
                                 <div class="card-body">
                                     <p>${sub_data[1]} ต้องการเบิกใช้วัสดุรหัส ${sub_data[2]} จำนวน ${sub_data[0]} อัน</p>
+                                    <button onclick="delnoti('${Object.keys(snapshot.val())[n]+"/"+Object.keys(item)[k]+"/"+Object.keys(data)[i]}')">ยกเลิก</button>
                                 </div>
                             </div>
                         
                             `)
                     }
-                })
+                }
             }
         })
+
+        function delnoti(token){
+            let ref=firebase.database().ref('database_manager/del_requrst/'+token)
+            ref.remove()
+            window.location.reload()
+        }
     </script>
 </body>
 </html>

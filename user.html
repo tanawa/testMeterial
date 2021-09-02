@@ -127,16 +127,23 @@
 	        ref.once('value',(snapshot)=>{
                 $('#show_user').empty()
                 Object.values(snapshot.val()).forEach((item)=>{
-                    if(type == 'ทั้งหมด' || type == item['type'] || 0 == number){
+                    if((type == 'ทั้งหมด' || type == item['type'] || 0 == number) && item['count'] > 0){
+                        let date_format = ''
+                        let split_date = item['date'].replaceAll('-','/').split('/')
+                        if(split_date[0].length > split_date[2].length){
+                            date_format = parseInt(split_date[2])+'/'+split_date[1]+'/'+split_date[0]
+                        }else{
+                            date_format = split_date[0]+'/'+split_date[1]+'/'+split_date[2]
+                        }
                         $('#show_user').append(`
                         <tr>
                             <td>${item['key']}</td>
                             <td>${item['name']}</td>
                             <td>${item['type']}</td>
                             <td>${item['count']}</td>
-                            <td>${item['date']}</td>
-                            <td>${item['time']}</td>
-                            <td><input type="number" id="a${item['key']}" style="display:none;width:100%;"><button onclick="editAt('${item['key']}')" class='btn-block choose_table' id='choose${item['key']}'>เลือก</button></td>
+                            <td>${date_format}</td>
+                            <td>${parseInt(item['time'].split(':')[0])+':'+item['time'].split(':')[1]}</td>
+                            <td><input type="number" id="a${item['key']}" style="display:none;width:100%;"><button onclick="editAt('${item['key']}')" class='btn-block choose_table' id='choose${item['key']}'>เลือก</button><button onclick="canAt('${item['key']}')" style="display:none;" class='btn-block choose_table' id='chooseB${item['key']}'>ยกเลิก</button></td>
                         </tr>
                         `)
                     }
@@ -144,11 +151,17 @@
                 })
             })
         }
-
+        function canAt(name){
+            $('#a'+name).val()
+            $('#a'+name).hide()
+            $('#chooseB'+name).hide()
+            $('#choose'+name).text('เลือก')
+        }
         function editAt(name){
             if($('#choose'+name).text()=='เลือก'){
                 $('#a'+name).show()
                 $('#choose'+name).text('เบิก')
+                $('#chooseB'+name).show()
             }else{
                 let make_date = (""+new Date().toLocaleDateString()+"|"+new Date().toLocaleTimeString()+"")
                 let ref=firebase.database().ref('database_manager/del_requrst/'+make_date)
@@ -163,6 +176,7 @@
                 })
                 $('#a'+name).val()
                 $('#a'+name).hide()
+                $('#chooseB'+name).hide()
                 $('#choose'+name).text('เลือก')
                 Swal.fire({
                     position: 'top-end',

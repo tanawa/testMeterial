@@ -96,7 +96,7 @@
                     <th>จำนวน</th>
                     <th>วันที่</th>
                     <th>เวลา</th>
-                    <th>สถานะ</th>
+                    <!--<th>สถานะ</th>-->
                   </tr>
                 </thead>
                 <tbody id="show_user">
@@ -133,16 +133,23 @@
 	        ref.once('value',(snapshot)=>{
                 $('#show_user').empty()
                 Object.values(snapshot.val()).forEach((item)=>{
-                    if(type == 'ทั้งหมด' || type == item['status']){
+                    if((type == 'ทั้งหมด' || type == item['status']) && item['count'] > 0){
+                        let date_format = ''
+                        let split_date = item['date'].replaceAll('-','/').split('/')
+                        if(split_date[0].length > split_date[2].length){
+                            date_format = parseInt(split_date[2])+'/'+split_date[1]+'/'+split_date[0]
+                        }else{
+                            date_format = split_date[0]+'/'+split_date[1]+'/'+split_date[2]
+                        }
                         $('#show_user').append(`
                         <tr>
                             <td>${item['key']}</td>
                             <td>${item['name']}</td>
                             <td>${item['type']}</td>
                             <td>${item['count']}</td>
-                            <td>${item['date']}</td>
-                            <td>${item['time']}</td>
-                            <td>${item['status']}</td>
+                            <td>${date_format}</td>
+                            <td>${parseInt(item['time'].split(':')[0])+':'+item['time'].split(':')[1]}</td>
+                            <!--<td>${item['status']}</td>-->
                             <td></td>
                         </tr>
                         `)
